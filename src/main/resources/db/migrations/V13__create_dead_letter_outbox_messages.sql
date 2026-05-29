@@ -1,4 +1,4 @@
-CREATE TABLE dead_letter_outbox_messages (
+CREATE TABLE IF NOT EXISTS dead_letter_outbox_messages (
     id UUID PRIMARY KEY DEFAULT uuidv7(),
     type VARCHAR(200) NOT NULL,
     content JSONB NOT NULL,

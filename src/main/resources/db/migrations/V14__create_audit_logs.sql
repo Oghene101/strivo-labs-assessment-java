@@ -1,4 +1,4 @@
-CREATE TABLE audit_logs (
+CREATE TABLE IF NOT EXISTS audit_logs (
     id UUID PRIMARY KEY DEFAULT uuidv7(),
     action      VARCHAR(20) NOT NULL,
     user_id     UUID NOT NULL,

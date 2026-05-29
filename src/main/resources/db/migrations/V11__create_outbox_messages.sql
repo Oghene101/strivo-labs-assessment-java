@@ -1,4 +1,4 @@
-CREATE TABLE outbox_messages (
+CREATE TABLE IF NOT EXISTS outbox_messages (
     id UUID PRIMARY KEY DEFAULT uuidv7(),
     type VARCHAR(200) NOT NULL,
     content JSONB NOT NULL,
