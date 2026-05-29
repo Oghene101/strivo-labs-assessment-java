@@ -22,6 +22,11 @@ public class Role extends EntityBase {
     @Column(name = "name", nullable = false, length = 256)
     private String name;
 
+    @Override
+    public boolean isNew() {
+        return isNewEntity;
+    }
+
     public static Role create(
             String name,
             String createdBy) {

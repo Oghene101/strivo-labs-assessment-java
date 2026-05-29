@@ -58,4 +58,9 @@ public class ServicePrice extends EntityBase {
 
         return servicePrice;
     }
+
+    @Override
+    public boolean isNew() {
+        return isNewEntity;
+    }
 }

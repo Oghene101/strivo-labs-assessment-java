@@ -116,4 +116,9 @@ public class User extends EntityBase {
         return lockoutEnd != null &&
                 lockoutEnd.isAfter(OffsetDateTime.now());
     }
+
+    @Override
+    public boolean isNew() {
+        return isNewEntity;
+    }
 }

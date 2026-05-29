@@ -53,7 +53,7 @@ public class SignUp {
 
                         String trimmedFirstName = command.firstName().trim();
                         String trimmedLastName = command.lastName().trim();
-                        String fullName = String.format("%s %s", trimmedFirstName, trimmedLastName);
+                        String fullName = trimmedFirstName + " " + trimmedLastName;
 
                         var user = User.create(
                                         trimmedFirstName,

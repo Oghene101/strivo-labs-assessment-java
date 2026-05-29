@@ -78,4 +78,9 @@ public class Subscription extends EntityBase {
 
         return subscription;
     }
+
+    @Override
+    public boolean isNew() {
+        return isNewEntity;
+    }
 }

@@ -58,4 +58,9 @@ public class Payment extends EntityBase {
 
     @Column(name = "paid_at")
     private OffsetDateTime paidAt;
+
+    @Override
+    public boolean isNew() {
+        return isNewEntity;
+    }
 }

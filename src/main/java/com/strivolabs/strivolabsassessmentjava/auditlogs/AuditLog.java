@@ -3,12 +3,17 @@ package com.strivolabs.strivolabsassessmentjava.auditlogs;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
+import org.springframework.data.domain.Persistable;
+
 import com.github.f4b6a3.uuid.UuidCreator;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.PostLoad;
+import jakarta.persistence.PostPersist;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -21,7 +26,7 @@ import lombok.ToString;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class AuditLog {
+public class AuditLog implements Persistable<UUID> {
 
     @Id
     @EqualsAndHashCode.Include
@@ -46,6 +51,9 @@ public class AuditLog {
     @Column(name = "changes", nullable = false, updatable = false)
     private String changes;
 
+    @Transient
+    protected boolean isNewEntity = true;
+
     public static AuditLog create(
             String action,
             UUID userId,
@@ -63,5 +71,16 @@ public class AuditLog {
         auditLog.changes = changes;
 
         return auditLog;
+    }
+
+    @Override
+    public boolean isNew() {
+        return isNewEntity;
+    }
+
+    @PostLoad
+    @PostPersist
+    protected void markNotNew() {
+        this.isNewEntity = false;
     }
 }

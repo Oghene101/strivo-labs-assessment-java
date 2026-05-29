@@ -3,10 +3,15 @@ package com.strivolabs.strivolabsassessmentjava.users.entities;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
+import org.springframework.data.domain.Persistable;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
+import jakarta.persistence.PostLoad;
+import jakarta.persistence.PostPersist;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -19,7 +24,7 @@ import lombok.ToString;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
-public class UserRole {
+public class UserRole implements Persistable<UserRoleId> {
 
     @EmbeddedId
     @EqualsAndHashCode.Include
@@ -37,6 +42,9 @@ public class UserRole {
     @Column(name = "deleted_by", length = 150)
     private String deletedBy;
 
+    @Transient
+    protected boolean isNewEntity = true;
+
     public static UserRole create(
             UUID userId,
             UUID roleId,
@@ -49,4 +57,16 @@ public class UserRole {
 
         return userRoles;
     }
+
+    @Override
+    public boolean isNew() {
+        return isNewEntity;
+    }
+
+    @PostLoad
+    @PostPersist
+    protected void markNotNew() {
+        this.isNewEntity = false;
+    }
+
 }

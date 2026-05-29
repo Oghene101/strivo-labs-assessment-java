@@ -42,4 +42,9 @@ public class Service extends EntityBase {
 
         return service;
     }
+
+    @Override
+    public boolean isNew() {
+        return isNewEntity;
+    }
 }

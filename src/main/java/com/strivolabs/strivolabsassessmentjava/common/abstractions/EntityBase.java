@@ -7,19 +7,22 @@ import java.util.UUID;
 
 import org.springframework.data.domain.AfterDomainEventPublication;
 import org.springframework.data.domain.DomainEvents;
+import org.springframework.data.domain.Persistable;
 
 import com.github.f4b6a3.uuid.UuidCreator;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.PostLoad;
+import jakarta.persistence.PostPersist;
 import jakarta.persistence.Transient;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 @Getter
 @MappedSuperclass
-public abstract class EntityBase implements Auditable {
+public abstract class EntityBase implements Auditable, Persistable<UUID> {
 
     @Id
     @EqualsAndHashCode.Include
@@ -72,6 +75,15 @@ public abstract class EntityBase implements Auditable {
     @Override
     public boolean isDeleted() {
         return deletedAt != null;
+    }
+
+    @Transient
+    protected boolean isNewEntity = true;
+
+    @PostLoad
+    @PostPersist
+    protected void markNotNew() {
+        this.isNewEntity = false;
     }
 
     @Transient
