@@ -36,6 +36,7 @@ public class SecurityConfig {
 
                         .requestMatchers(HttpMethod.POST, "/api/v1/users").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/confirm-email").permitAll()
 
                         // Any other endpoint not explicitly listed above requires a valid login
                         .anyRequest().authenticated());

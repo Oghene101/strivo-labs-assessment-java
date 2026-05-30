@@ -8,4 +8,4 @@ CREATE TABLE IF NOT EXISTS dead_letter_outbox_messages (
 );
 
 CREATE INDEX idx_dead_letter_outbox_messages_dead_lettered_on
-ON dead_letter_outbox_messages (dead_lettered_on);
+    ON dead_letter_outbox_messages (dead_lettered_on);

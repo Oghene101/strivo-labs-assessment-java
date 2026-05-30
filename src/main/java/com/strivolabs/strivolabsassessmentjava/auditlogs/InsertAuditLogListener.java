@@ -149,7 +149,7 @@ public class InsertAuditLogListener
     }
 
     private boolean isIgnoredProperty(String propertyName) {
-        return propertyName.equalsIgnoreCase("password")
+        return propertyName.equalsIgnoreCase("passwordHash")
                 || propertyName.equalsIgnoreCase("lastUpdatedAt")
                 || propertyName.equalsIgnoreCase("lastUpdatedBy");
     }

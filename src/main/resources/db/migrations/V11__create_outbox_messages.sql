@@ -10,6 +10,4 @@ CREATE TABLE IF NOT EXISTS outbox_messages (
 );
 
 CREATE INDEX idx_outbox_unprocessed_retry
-ON outbox_messages (occurred_on)
-INCLUDE (next_retry_on)
-WHERE processed_on IS NULL;
+    ON outbox_messages (occurred_on) INCLUDE (next_retry_on) WHERE processed_on IS NULL;

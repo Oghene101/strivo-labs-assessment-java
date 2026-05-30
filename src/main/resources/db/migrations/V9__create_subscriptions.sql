@@ -20,18 +20,14 @@ CREATE TABLE IF NOT EXISTS subscriptions (
     deleted_by VARCHAR(150)
 );
 
--- only one active subscription per user per service
 CREATE UNIQUE INDEX IF NOT EXISTS idx_subscriptions_active_user_service
     ON subscriptions(user_id, service_id) WHERE status = 'ACTIVE' AND deleted_at IS NULL;
 
--- query all subscriptions for a user filtered by status
 CREATE INDEX IF NOT EXISTS idx_subscriptions_user_id_status
     ON subscriptions(user_id, status);
 
--- query all subscriptions for a service
 CREATE INDEX IF NOT EXISTS idx_subscriptions_service_id
     ON subscriptions(service_id);
 
--- find expiring subscriptions for renewal jobs
 CREATE INDEX IF NOT EXISTS idx_subscriptions_expires_at
     ON subscriptions(expires_at) WHERE status = 'ACTIVE';

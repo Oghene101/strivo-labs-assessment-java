@@ -5,6 +5,3 @@ CREATE TABLE IF NOT EXISTS outbox_message_consumers (
 
     PRIMARY KEY (outbox_message_id, name)
 );
-
-CREATE INDEX IF NOT EXISTS idx_outbox_message_consumers_outbox_message_id
-    ON outbox_message_consumers(outbox_message_id);

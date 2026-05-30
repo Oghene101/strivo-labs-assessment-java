@@ -11,8 +11,8 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import com.strivolabs.strivolabsassessmentjava.auth.Repositories.RefreshTokenRepository;
-import com.strivolabs.strivolabsassessmentjava.auth.Repositories.SessionRepository;
+import com.strivolabs.strivolabsassessmentjava.auth.repositories.RefreshTokenRepository;
+import com.strivolabs.strivolabsassessmentjava.auth.repositories.SessionRepository;
 import com.strivolabs.strivolabsassessmentjava.common.abstractions.ApiError;
 import com.strivolabs.strivolabsassessmentjava.common.abstractions.Command;
 import com.strivolabs.strivolabsassessmentjava.common.abstractions.CommandHandler;

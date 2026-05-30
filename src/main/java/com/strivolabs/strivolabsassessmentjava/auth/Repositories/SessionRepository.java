@@ -1,4 +1,4 @@
-package com.strivolabs.strivolabsassessmentjava.auth.Repositories;
+package com.strivolabs.strivolabsassessmentjava.auth.repositories;
 
 import java.util.UUID;
 

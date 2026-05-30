@@ -3,6 +3,7 @@ package com.strivolabs.strivolabsassessmentjava.users.entities;
 import java.time.OffsetDateTime;
 
 import com.github.f4b6a3.uuid.UuidCreator;
+import com.strivolabs.strivolabsassessmentjava.auth.domainevents.EmailConfirmedDomainEvent;
 import com.strivolabs.strivolabsassessmentjava.common.abstractions.EntityBase;
 import com.strivolabs.strivolabsassessmentjava.users.domainevents.UserCreatedDomainEvent;
 
@@ -68,21 +69,22 @@ public class User extends EntityBase {
         user.raise(new UserCreatedDomainEvent(
                 UuidCreator.getTimeOrderedEpoch(),
                 OffsetDateTime.now(),
-                user.getId(),
                 user.getFirstName(),
                 user.getEmail()));
 
         return user;
     }
 
-    public void confirmEmail(String updatedBy) {
+    public void confirmEmail(String firstName, String email, String updatedBy) {
         this.emailConfirmed = true;
-        updateAudit(updatedBy);
-    }
 
-    public void setPhoneNumber(String phoneNumber, String updatedBy) {
-        this.phoneNumber = phoneNumber;
         updateAudit(updatedBy);
+
+        this.raise(new EmailConfirmedDomainEvent(
+                UuidCreator.getTimeOrderedEpoch(),
+                OffsetDateTime.now(),
+                firstName,
+                email));
     }
 
     public void changePassword(String newPasswordHash, String updatedBy) {
@@ -92,11 +94,7 @@ public class User extends EntityBase {
 
     public void recordFailedAccess(String updatedBy) {
         this.accessFailedCount++;
-        updateAudit(updatedBy);
-    }
 
-    public void resetAccessFailures(String updatedBy) {
-        this.accessFailedCount = 0;
         updateAudit(updatedBy);
     }
 
@@ -109,6 +107,7 @@ public class User extends EntityBase {
     public void unlock(String updatedBy) {
         this.lockoutEnd = null;
         this.accessFailedCount = 0;
+
         updateAudit(updatedBy);
     }
 

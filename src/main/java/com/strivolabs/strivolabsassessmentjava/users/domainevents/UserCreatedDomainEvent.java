@@ -8,7 +8,6 @@ import com.strivolabs.strivolabsassessmentjava.common.abstractions.DomainEvent;
 public record UserCreatedDomainEvent(
         UUID id,
         OffsetDateTime occurredOn,
-        UUID userId,
         String firstName,
         String email) implements DomainEvent {
 

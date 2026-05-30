@@ -5,13 +5,17 @@ import java.util.UUID;
 
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+import org.springframework.data.domain.Persistable;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.PostLoad;
+import jakarta.persistence.PostPersist;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -24,7 +28,7 @@ import lombok.ToString;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class OutboxMessage {
+public class OutboxMessage implements Persistable<UUID> {
 
     @Id
     @EqualsAndHashCode.Include
@@ -53,6 +57,9 @@ public class OutboxMessage {
     @Column(name = "error")
     private String error;
 
+    @Transient
+    protected boolean isNewEntity = true;
+
     public static OutboxMessage create(UUID domainEventId, String type, JsonNode content) {
         OutboxMessage message = new OutboxMessage();
 
@@ -76,4 +83,16 @@ public class OutboxMessage {
     public void setNextRetryOn(OffsetDateTime nextRetryOn) {
         this.nextRetryOn = nextRetryOn;
     }
+
+    @Override
+    public boolean isNew() {
+        return isNewEntity;
+    }
+
+    @PostLoad
+    @PostPersist
+    protected void markNotNew() {
+        this.isNewEntity = false;
+    }
+
 }
