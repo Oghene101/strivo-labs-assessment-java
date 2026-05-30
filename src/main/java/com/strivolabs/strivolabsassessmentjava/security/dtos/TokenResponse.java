@@ -1,4 +1,4 @@
-package com.strivolabs.strivolabsassessmentjava.common.security.dtos;
+package com.strivolabs.strivolabsassessmentjava.security.dtos;
 
 public record TokenResponse(
                 String accessToken,

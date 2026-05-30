@@ -48,6 +48,15 @@ public class ApiException extends RuntimeException {
         return new ApiException("Conflict", message, error, HttpStatus.CONFLICT);
     }
 
+    public static ApiException tooManyRequests(ApiError error) {
+        return new ApiException("Too Many Requests", "Rate limit exceeded. Please try again later.", error,
+                HttpStatus.TOO_MANY_REQUESTS);
+    }
+
+    public static ApiException tooManyRequests(ApiError error, String message) {
+        return new ApiException("Too Many Requests", message, error, HttpStatus.TOO_MANY_REQUESTS);
+    }
+
     public static ApiException unauthorized(ApiError error) {
         return new ApiException("Unauthorized", "Authentication required.", error, HttpStatus.UNAUTHORIZED);
     }

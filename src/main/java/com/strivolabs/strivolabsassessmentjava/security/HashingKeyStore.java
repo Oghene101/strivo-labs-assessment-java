@@ -1,4 +1,4 @@
-package com.strivolabs.strivolabsassessmentjava.common.security;
+package com.strivolabs.strivolabsassessmentjava.security;
 
 import java.util.Base64;
 import java.util.List;
@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
-import com.strivolabs.strivolabsassessmentjava.common.security.dtos.HashKeyResponse;
+import com.strivolabs.strivolabsassessmentjava.security.dtos.HashKeyResponse;
 
 @Component
 public class HashingKeyStore {
@@ -15,7 +15,7 @@ public class HashingKeyStore {
 
     public HashingKeyStore(HashingProperties properties) {
         if (properties.keys() == null) {
-            throw new InvalidOperationException("No HMAC keys configured.");
+            throw new IllegalStateException("No HMAC keys configured.");
         }
 
         List<HashKeyResponse> parsedKeys = properties.keys().stream()
@@ -33,43 +33,35 @@ public class HashingKeyStore {
         return keys.stream()
                 .filter(HashKeyResponse::isActive)
                 .reduce((a, b) -> {
-                    throw new InvalidOperationException("Exactly one HMAC key must be active.");
+                    throw new IllegalStateException("Exactly one HMAC key must be active.");
                 })
-                .orElseThrow(() -> new InvalidOperationException("No active HMAC key found."));
+                .orElseThrow(() -> new IllegalStateException("No active HMAC key found."));
     }
 
     public HashKeyResponse getByKeyId(String keyId) {
         return keys.stream()
                 .filter(k -> k.keyId().equals(keyId))
                 .findFirst()
-                .orElseThrow(() -> new InvalidOperationException("HMAC KeyId not found: " + keyId));
+                .orElseThrow(() -> new IllegalStateException("HMAC KeyId not found: " + keyId));
     }
 
     private void validate() {
         if (keys.isEmpty()) {
-            throw new InvalidOperationException("No HMAC keys configured.");
+            throw new IllegalStateException("No HMAC keys configured.");
         }
 
         long activeCount = keys.stream().filter(HashKeyResponse::isActive).count();
         if (activeCount != 1) {
-            throw new InvalidOperationException("Exactly one HMAC key must be active. Found: " + activeCount);
+            throw new IllegalStateException("Exactly one HMAC key must be active. Found: " + activeCount);
         }
 
-        // Check for duplicate key IDs
         boolean hasDuplicates = keys.stream()
                 .collect(Collectors.groupingBy(HashKeyResponse::keyId, Collectors.counting()))
                 .values().stream()
                 .anyMatch(count -> count > 1);
 
         if (hasDuplicates) {
-            throw new InvalidOperationException("Duplicate HMAC KeyId detected.");
-        }
-    }
-
-    // Custom runtime exception helper matching C# behavior
-    public static class InvalidOperationException extends RuntimeException {
-        public InvalidOperationException(String message) {
-            super(message);
+            throw new IllegalStateException("Duplicate HMAC KeyId detected.");
         }
     }
 }

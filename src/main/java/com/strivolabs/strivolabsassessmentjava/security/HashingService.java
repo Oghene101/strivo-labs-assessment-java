@@ -1,4 +1,4 @@
-package com.strivolabs.strivolabsassessmentjava.common.security;
+package com.strivolabs.strivolabsassessmentjava.security;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -9,8 +9,8 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.springframework.stereotype.Service;
 
-import com.strivolabs.strivolabsassessmentjava.common.security.dtos.HashResponse;
-import com.strivolabs.strivolabsassessmentjava.common.security.dtos.HashKeyResponse;
+import com.strivolabs.strivolabsassessmentjava.security.dtos.HashKeyResponse;
+import com.strivolabs.strivolabsassessmentjava.security.dtos.HashResponse;
 
 import lombok.RequiredArgsConstructor;
 

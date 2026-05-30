@@ -1,4 +1,4 @@
-package com.strivolabs.strivolabsassessmentjava.common.security;
+package com.strivolabs.strivolabsassessmentjava.security;
 
 import java.util.List;
 
