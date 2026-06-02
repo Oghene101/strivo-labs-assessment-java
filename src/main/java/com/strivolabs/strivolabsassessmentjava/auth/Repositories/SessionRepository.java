@@ -15,9 +15,23 @@ public interface SessionRepository extends JpaRepository<Session, UUID> {
     @Transactional
     @Query("""
                 UPDATE Session s
-                SET status = 'REVOKED'
+                SET status = 'REVOKED',
+                    s.lastUpdatedAt = CURRENT_TIMESTAMP,
+                    s.lastUpdatedBy = :lastUpdatedBy
                 WHERE s.userId = :userId
                   AND s.status = 'ACTIVE'
             """)
-    void revoke(@Param("userId") UUID userId);
+    void revoke(@Param("userId") UUID userId, @Param("lastUpdatedBy") String lastUpdatedBy);
+
+    @Query("""
+            SELECT CASE
+                     WHEN Count(s) > 0 THEN TRUE
+                     ELSE FALSE
+                   END
+            FROM   Session s
+            WHERE  s.jwtId = :jwtId
+                   AND s.status = 'ACTIVE'
+            """)
+    boolean existsByJwtId(@Param("jwtId") String jwtId);
+
 }

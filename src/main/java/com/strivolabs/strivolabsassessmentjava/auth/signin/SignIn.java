@@ -26,7 +26,7 @@ import com.strivolabs.strivolabsassessmentjava.users.repositories.UserRepository
 
 import lombok.RequiredArgsConstructor;
 
-public class SignIn {
+public final class SignIn {
 
         public static record CommandImpl(
                         String email,
@@ -83,8 +83,8 @@ public class SignIn {
                         List<String> roleNames = roles.findRoleNamesByUserId(user.getId());
 
                         users.save(user);
-                        sessions.revoke(user.getId());
-                        refreshTokens.revoke(user.getId());
+                        refreshTokens.revoke(user.getId(), HANDLER_NAME);
+                        sessions.revoke(user.getId(), HANDLER_NAME);
                         TokenResponse tokenResponse = jwt.generateToken(user, roleNames);
 
                         return new Response(tokenResponse);

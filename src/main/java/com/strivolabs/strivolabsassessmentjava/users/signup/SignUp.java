@@ -19,7 +19,7 @@ import com.strivolabs.strivolabsassessmentjava.users.repositories.UserRoleReposi
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
-public class SignUp {
+public final class SignUp {
 
         public static record CommandImpl(
                         String firstName,

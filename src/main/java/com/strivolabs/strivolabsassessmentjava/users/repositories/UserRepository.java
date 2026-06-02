@@ -26,7 +26,8 @@ public interface UserRepository extends JpaRepository<User, UUID> {
                      SELECT u.id,
                             u.firstName,
                             u.lastName,
-                            u.email
+                            u.email,
+                            u.passwordHash
                      FROM   User u
                      WHERE  u.email = :email
                             AND  u.deletedAt IS NULL

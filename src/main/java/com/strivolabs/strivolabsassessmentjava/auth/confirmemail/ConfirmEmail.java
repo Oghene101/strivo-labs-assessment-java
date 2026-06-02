@@ -19,7 +19,7 @@ import io.jsonwebtoken.Claims;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
-public class ConfirmEmail {
+public final class ConfirmEmail {
 
         public static record CommandImpl(
                         String email,

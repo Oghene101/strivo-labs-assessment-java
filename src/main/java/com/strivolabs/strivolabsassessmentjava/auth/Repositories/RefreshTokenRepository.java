@@ -15,10 +15,12 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshToken, UUID
     @Transactional
     @Query("""
                 UPDATE RefreshToken rt
-                SET rt.status = 'REVOKED'
+                SET rt.status = 'REVOKED',
+                    rt.lastUpdatedAt = CURRENT_TIMESTAMP,
+                    rt.lastUpdatedBy = :lastUpdatedBy
                 WHERE rt.userId = :userId
                   AND rt.status = 'ACTIVE'
             """)
-    void revoke(@Param("userId") UUID userId);
+    void revoke(@Param("userId") UUID userId, @Param("lastUpdatedBy") String lastUpdatedBy);
 
 }

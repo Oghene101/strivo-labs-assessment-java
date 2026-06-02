@@ -9,6 +9,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.strivolabs.strivolabsassessmentjava.common.constants.Http;
+
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +19,6 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
-    private static final String MDN_BASE_URL = "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/";
 
     // validation errors - @Valid on request bodies
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -35,7 +36,7 @@ public class GlobalExceptionHandler {
                 HttpStatus.BAD_REQUEST,
                 "One or more validation errors occurred");
         problem.setTitle("Validation Error");
-        problem.setType(URI.create(MDN_BASE_URL + HttpStatus.BAD_REQUEST.value()));
+        problem.setType(URI.create(Http.MDN_BASE_URL + HttpStatus.BAD_REQUEST.value()));
         problem.setInstance(URI.create(request.getRequestURI()));
         problem.setProperty("errors", errors);
 
@@ -53,7 +54,7 @@ public class GlobalExceptionHandler {
                 ex.getStatusCode(),
                 ex.getMessage());
         problem.setTitle(ex.getTitle());
-        problem.setType(URI.create(MDN_BASE_URL + ex.getStatusCode().value()));
+        problem.setType(URI.create(Http.MDN_BASE_URL + ex.getStatusCode().value()));
         problem.setInstance(URI.create(request.getRequestURI()));
         problem.setProperty("error", ex.getError());
 
@@ -71,7 +72,7 @@ public class GlobalExceptionHandler {
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 "An unexpected error occurred");
         problem.setTitle("Server Error");
-        problem.setType(URI.create(MDN_BASE_URL + HttpStatus.INTERNAL_SERVER_ERROR.value()));
+        problem.setType(URI.create(Http.MDN_BASE_URL + HttpStatus.INTERNAL_SERVER_ERROR.value()));
         problem.setInstance(URI.create(request.getRequestURI()));
 
         return problem;
