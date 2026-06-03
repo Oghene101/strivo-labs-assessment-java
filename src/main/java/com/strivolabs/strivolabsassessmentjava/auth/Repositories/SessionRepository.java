@@ -1,5 +1,6 @@
 package com.strivolabs.strivolabsassessmentjava.auth.repositories;
 
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,22 +17,48 @@ public interface SessionRepository extends JpaRepository<Session, UUID> {
     @Query("""
                 UPDATE Session s
                 SET status = 'REVOKED',
-                    s.lastUpdatedAt = CURRENT_TIMESTAMP,
+                    s.lastUpdatedAt = :now,
                     s.lastUpdatedBy = :lastUpdatedBy
                 WHERE s.userId = :userId
                   AND s.status = 'ACTIVE'
             """)
-    void revoke(@Param("userId") UUID userId, @Param("lastUpdatedBy") String lastUpdatedBy);
+    void revoke(
+            @Param("userId") UUID userId,
+            @Param("lastUpdatedBy") String lastUpdatedBy,
+            @Param("now") OffsetDateTime now);
 
     @Query("""
-            SELECT CASE
-                     WHEN Count(s) > 0 THEN TRUE
-                     ELSE FALSE
-                   END
+            SELECT Count(s) > 0
             FROM   Session s
             WHERE  s.jwtId = :jwtId
                    AND s.status = 'ACTIVE'
             """)
     boolean existsByJwtId(@Param("jwtId") String jwtId);
+
+    @Modifying
+    @Transactional
+    @Query("""
+                UPDATE Session s
+                SET jwtId = :jwtId,
+                    s.lastUpdatedAt = :now,
+                    s.lastUpdatedBy = :lastUpdatedBy
+                WHERE s.id = :sessionId
+            """)
+    void updateJwtId(
+            @Param("sessionId") UUID sessionId,
+            @Param("jwtId") String jwtId,
+            @Param("lastUpdatedBy") String lastUpdatedBy,
+            @Param("now") OffsetDateTime now);
+
+    @Query("""
+            SELECT Count(s) > 0
+            FROM   Session s
+            WHERE  s.id = :sessionId
+                   AND s.expiresAt > :now
+                   AND s.status = 'ACTIVE'
+             """)
+    boolean isActive(
+            @Param("sessionId") UUID sessionId,
+            @Param("now") OffsetDateTime now);
 
 }

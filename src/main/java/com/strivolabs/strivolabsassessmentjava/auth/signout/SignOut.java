@@ -1,5 +1,6 @@
 package com.strivolabs.strivolabsassessmentjava.auth.signout;
 
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 import org.springframework.security.core.Authentication;
@@ -43,8 +44,8 @@ public final class SignOut {
 
                 UUID userId = UUID.fromString(userIdStr);
 
-                refreshTokens.revoke(userId, HANDLER_NAME);
-                sessions.revoke(userId, HANDLER_NAME);
+                refreshTokens.revoke(userId, HANDLER_NAME, OffsetDateTime.now());
+                sessions.revoke(userId, HANDLER_NAME, OffsetDateTime.now());
             } else {
                 throw ApiException.unauthorized(new ApiError("Auth.Error", "Missing token claims context"));
             }

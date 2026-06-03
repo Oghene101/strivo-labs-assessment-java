@@ -17,9 +17,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RequestMapping("api/v1/auth/sign-out")
 @Tag(name = "auth")
-public class Endpoint {
+public final class Endpoint {
 
-        private final SignOut.Handler signOutHandler;
+        private final SignOut.Handler handler;
 
         @PostMapping
         @Operation(summary = "Sign out user", description = "Revokes user sessions and refresh tokens")
@@ -31,8 +31,8 @@ public class Endpoint {
                         responseCode = "401", //
                         description = "Unauthorized", //
                         content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetail.class)))
-        public ResponseEntity<Void> signUp() {
-                signOutHandler.handle(new SignOut.CommandImpl());
+        public ResponseEntity<Void> signOut() {
+                handler.handle(new SignOut.CommandImpl());
 
                 return ResponseEntity.noContent().build();
         }

@@ -83,8 +83,8 @@ public final class SignIn {
                         List<String> roleNames = roles.findRoleNamesByUserId(user.getId());
 
                         users.save(user);
-                        refreshTokens.revoke(user.getId(), HANDLER_NAME);
-                        sessions.revoke(user.getId(), HANDLER_NAME);
+                        refreshTokens.revoke(user.getId(), HANDLER_NAME, OffsetDateTime.now());
+                        sessions.revoke(user.getId(), HANDLER_NAME, OffsetDateTime.now());
                         TokenResponse tokenResponse = jwt.generateToken(user, roleNames);
 
                         return new Response(tokenResponse);

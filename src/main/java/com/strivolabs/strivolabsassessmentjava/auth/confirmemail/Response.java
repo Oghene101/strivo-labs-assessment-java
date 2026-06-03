@@ -1,5 +1,5 @@
 package com.strivolabs.strivolabsassessmentjava.auth.confirmemail;
 
-public record Response() {
+public final record Response() {
     
 }

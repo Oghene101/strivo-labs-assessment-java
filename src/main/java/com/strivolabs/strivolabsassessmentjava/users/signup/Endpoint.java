@@ -24,9 +24,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RequestMapping("api/v1/users")
 @Tag(name = "users")
-public class Endpoint {
+public final class Endpoint {
 
-        private final SignUp.Handler signUpHandler;
+        private final SignUp.Handler handler;
 
         @PostMapping
         @Operation(summary = "Register a new user", description = "Creates a new user account")
@@ -45,7 +45,7 @@ public class Endpoint {
         public ResponseEntity<StandardResponse<Response>> signUp(
                         @Valid @RequestBody Request request) {
                 SignUp.CommandImpl command = Mapper.toCommand(request);
-                Response result = signUpHandler.handle(command);
+                Response result = handler.handle(command);
 
                 StandardResponse<Response> response = StandardResponse.success(result,
                                 "User created successfully",

@@ -22,9 +22,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RequestMapping("api/v1/auth/confirm-email")
 @Tag(name = "auth")
-public class Endpoint {
+public final class Endpoint {
 
-        private final ConfirmEmail.Handler confirmEmailHandler;
+        private final ConfirmEmail.Handler handler;
 
         @PostMapping
         @Operation(summary = "Confirm user email", description = "Confirms a user's email using the confirmation token.")
@@ -43,7 +43,7 @@ public class Endpoint {
         public ResponseEntity<StandardResponse<Void>> confirmEmail(
                         @Valid @RequestBody Request request) {
                 ConfirmEmail.CommandImpl command = Mapper.toCommand(request);
-                confirmEmailHandler.handle(command);
+                handler.handle(command);
 
                 StandardResponse<Void> response = StandardResponse.success("Email confirmed successfully",
                                 HttpStatus.OK);

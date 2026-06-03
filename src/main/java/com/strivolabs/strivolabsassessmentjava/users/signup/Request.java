@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 @Schema(name = "SignUpRequest")
-public record Request(
+public final record Request(
         @NotBlank(message = "First name is required") //
         @Size(max = 50, message = "First name cannot exceed 50 characters") //
         String firstName,

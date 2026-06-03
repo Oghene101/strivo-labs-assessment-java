@@ -12,10 +12,7 @@ import com.strivolabs.strivolabsassessmentjava.users.entities.User;
 
 public interface UserRepository extends JpaRepository<User, UUID> {
        @Query("""
-                     SELECT CASE
-                              WHEN Count(u) > 0 THEN TRUE
-                              ELSE FALSE
-                            END
+                     SELECT Count(u) > 0
                      FROM   User u
                      WHERE  u.email = :email
                             AND u.deletedAt IS NULL
@@ -35,4 +32,14 @@ public interface UserRepository extends JpaRepository<User, UUID> {
        Optional<UserDto> findDtoByEmail(@Param("email") String email);
 
        Optional<User> findByEmail(String email);
+
+       @Override
+       @Query("""
+                     SELECT u
+                     FROM   User u
+                     WHERE  u.Id = :userId
+                            AND  u.deletedAt IS NULL
+                         """)
+       Optional<User> findById(@Param("userId") UUID userId);
+
 }

@@ -27,6 +27,7 @@ import com.strivolabs.strivolabsassessmentjava.security.enums.TokenPurpose;
 import com.strivolabs.strivolabsassessmentjava.users.entities.User;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 
@@ -99,6 +100,29 @@ public class JwtService {
         return new TokenResponse(accessToken, accessTokenExpirationInMs, refreshToken);
     }
 
+    public TokenResponse generateTokenForExistingSession(User user, List<String> roles, UUID sessionId) {
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + accessTokenExpirationInMs);
+        String jti = UUID.randomUUID().toString().replace("-", "");
+
+        String accessToken = generateAccessToken(user, roles, now, expiryDate, jti, sessionId);
+
+        String refreshToken = generateRefreshToken();
+        HashResponse refreshTokenHashResponse = hashingService.compute(refreshToken);
+
+        sessions.updateJwtId(sessionId, jti, user.getId().toString(), OffsetDateTime.now());
+
+        refreshTokens.save(
+                RefreshToken.create(
+                        user.getId(),
+                        sessionId,
+                        refreshTokenHashResponse.hash(),
+                        refreshTokenHashResponse.keyId(),
+                        OffsetDateTime.now().plusDays(refreshTokenExpirationInDays)));
+
+        return new TokenResponse(accessToken, accessTokenExpirationInMs, refreshToken);
+    }
+
     public PublicKey getPublicKey() {
         return this.publicKey;
     }
@@ -162,6 +186,21 @@ public class JwtService {
                 .build()
                 .parseSignedClaims(token) // Validates 'exp' and structural integrity
                 .getPayload();
+    }
+
+    public Claims getClaimsFromExpiredToken(String token) {
+        try {
+            return Jwts.parser()
+                    .verifyWith(publicKey)
+                    .requireIssuer(accessTokenIssuer)
+                    .requireAudience(accessTokenAudience)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+
+        } catch (ExpiredJwtException e) {
+            return e.getClaims();
+        }
     }
 
     public String generateRefreshToken() {

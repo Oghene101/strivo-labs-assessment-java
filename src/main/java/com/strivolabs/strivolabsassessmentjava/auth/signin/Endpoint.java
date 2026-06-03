@@ -22,9 +22,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RequestMapping("api/v1/auth")
 @Tag(name = "auth")
-public class Endpoint {
+public final class Endpoint {
 
-        private final SignIn.Handler signInHandler;
+        private final SignIn.Handler handler;
 
         @PostMapping
         @Operation(summary = "Authenticate user", description = "Authenticates a user with their credentials and returns access and refresh tokens.")
@@ -43,7 +43,7 @@ public class Endpoint {
         public ResponseEntity<StandardResponse<Response>> signIn(
                         @Valid @RequestBody Request request) {
                 SignIn.CommandImpl command = Mapper.toCommand(request);
-                Response result = signInHandler.handle(command);
+                Response result = handler.handle(command);
 
                 StandardResponse<Response> response = StandardResponse.success(result,
                                 "User authenticated successfully", HttpStatus.OK);

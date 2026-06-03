@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 @Schema(name = "SignInRequest")
-public record Request(
+public final record Request(
 
                 @NotBlank(message = "Email is required") //
                 @Email(message = "Email must be a valid email address") //
