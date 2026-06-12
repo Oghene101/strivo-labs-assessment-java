@@ -47,7 +47,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String jti = claims.get("jti", String.class);
         String email = claims.get("email", String.class);
 
-        // todo: query sessions table to check if access token is valid
         if (!sessions.existsByJwtId(jti)) {
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

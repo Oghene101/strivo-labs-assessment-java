@@ -4,6 +4,7 @@ import java.time.OffsetDateTime;
 
 import com.github.f4b6a3.uuid.UuidCreator;
 import com.strivolabs.strivolabsassessmentjava.auth.domainevents.EmailConfirmedDomainEvent;
+import com.strivolabs.strivolabsassessmentjava.auth.domainevents.UserForgotPasswordDomainEvent;
 import com.strivolabs.strivolabsassessmentjava.common.abstractions.EntityBase;
 import com.strivolabs.strivolabsassessmentjava.users.domainevents.UserCreatedDomainEvent;
 
@@ -69,7 +70,6 @@ public class User extends EntityBase {
         user.raise(new UserCreatedDomainEvent(
                 UuidCreator.getTimeOrderedEpoch(),
                 OffsetDateTime.now(),
-                user.getFirstName(),
                 user.getEmail()));
 
         return user;
@@ -90,6 +90,13 @@ public class User extends EntityBase {
     public void changePassword(String newPasswordHash, String updatedBy) {
         this.passwordHash = newPasswordHash;
         updateAudit(updatedBy);
+    }
+
+    public void forgotPassword() {
+        this.raise(new UserForgotPasswordDomainEvent(
+                UuidCreator.getTimeOrderedEpoch(),
+                OffsetDateTime.now(),
+                this.getEmail()));
     }
 
     public void recordFailedAccess(String updatedBy) {

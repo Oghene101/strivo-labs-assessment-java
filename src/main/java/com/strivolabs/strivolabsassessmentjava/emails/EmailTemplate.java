@@ -42,4 +42,24 @@ public final class EmailTemplate {
                 firstName);
     }
 
+    public static String getResetPasswordEmail(String firstName, String resetPasswordLink) {
+        return String.format(
+                """
+                            <html>
+                                <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+                                    <h2>Hello %s,</h2>
+                                    <p>We received a request to reset your Strivo Labs password. Click the button below to choose a new one.</p>
+                                    <div style="margin: 24px 0;">
+                                        <a href="%s" style="background-color: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold; display: inline-block;">
+                                            Reset Password
+                                        </a>
+                                    </div>
+                                    <p>If you didn't request a password reset, you can safely ignore this email — your password will remain unchanged.</p>
+                                    <hr style="border: none; border-top: 1px solid #eee; margin-top: 30px;" />
+                                    <p style="font-size: 11px; color: #999;">This link will expire shortly. Do not share it with anyone.</p>
+                                </body>
+                            </html>
+                        """,
+                firstName, resetPasswordLink);
+    }
 }

@@ -1,4 +1,4 @@
-package com.strivolabs.strivolabsassessmentjava.users.domainevents;
+package com.strivolabs.strivolabsassessmentjava.auth.domainevents;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -25,46 +25,46 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class UserCreatedDomainEventHandler implements DomainEventHandler<UserCreatedDomainEvent> {
+public class UserForgotPasswordDomainEventHandler implements DomainEventHandler<UserForgotPasswordDomainEvent> {
 
     private final UserRepository users;
     private final JwtService jwt;
     private final JavaMailSender mail;
 
-    @Value("${security.email-confirmation-token-expiration-ms}")
-    private Long emailConfirmationTokenExpirationInMs;
-    @Value("${confirm-email-endpoint}")
-    private String confirmEmailEndpoint;
+    @Value("${security.reset-password-token-expiration-ms}")
+    private Long resetPasswordTokenExpirationInMs;
+    @Value("${reset-password-endpoint}")
+    private String resetPasswordEndpoint;
 
     @Override
-    public void handle(UserCreatedDomainEvent event) {
+    public void handle(UserForgotPasswordDomainEvent event) {
         try {
 
             UserDto user = users.findDtoByEmail(event.email()).orElseThrow();
 
-            sendConfirmationEmail(user);
+            sendResetPasswordEmail(user);
         } catch (NoSuchElementException ex) {
             log.error("User with email: {} not found", event.email(), ex);
             throw ex;
         } catch (MessagingException ex) {
-            log.error("Failed to send welcome email to {}", event.email(), ex);
+            log.error("Failed to send reset password email to {}", event.email(), ex);
             throw new RuntimeException("Email delivery failed, rolling back outbox state", ex);
         }
     }
 
-    private void sendConfirmationEmail(UserDto user) throws MessagingException {
+    private void sendResetPasswordEmail(UserDto user) throws MessagingException {
         Date now = new Date();
         String token = jwt.generateOnetimeToken(
                 user,
-                TokenPurpose.EMAIL_CONFIRMATION,
+                TokenPurpose.PASSWORD_RESET,
                 now,
-                new Date(now.getTime() + emailConfirmationTokenExpirationInMs));
+                new Date(now.getTime() + resetPasswordTokenExpirationInMs));
 
         String encodedEmail = URLEncoder.encode(user.email(), StandardCharsets.UTF_8);
         String encodedToken = URLEncoder.encode(token, StandardCharsets.UTF_8);
 
-        String confirmationLink = String.format(
-                confirmEmailEndpoint + "email=%s&token=%s",
+        String resetPasswordLink = String.format(
+                resetPasswordEndpoint + "email=%s&token=%s",
                 encodedEmail,
                 encodedToken);
 
@@ -72,15 +72,15 @@ public class UserCreatedDomainEventHandler implements DomainEventHandler<UserCre
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
 
         helper.setTo(user.email());
-        helper.setSubject("Verify Your Strivo Labs Account");
+        helper.setSubject("Reset Your Strivo Labs Password");
         helper.setFrom("noreply@strivolabs.com");
-        helper.setText(EmailTemplate.getConfirmationEmail(user.firstName(), confirmationLink), true);
+        helper.setText(EmailTemplate.getResetPasswordEmail(user.firstName(), resetPasswordLink), true);
 
         mail.send(mimeMessage);
     }
 
     @Override
-    public Class<UserCreatedDomainEvent> getEventType() {
-        return UserCreatedDomainEvent.class;
+    public Class<UserForgotPasswordDomainEvent> getEventType() {
+        return UserForgotPasswordDomainEvent.class;
     }
 }

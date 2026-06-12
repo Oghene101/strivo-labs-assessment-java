@@ -15,8 +15,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.strivolabs.strivolabsassessmentjava.common.abstractions.EntityBase;
+import com.strivolabs.strivolabsassessmentjava.security.AuthService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,7 +29,7 @@ public class InsertAuditLogListener
         PostCommitUpdateEventListener,
         PostCommitDeleteEventListener {
 
-    private final ObjectProvider<AuditContext> auditContext;
+    private final ObjectProvider<AuthService> auth;
     private final ObjectProvider<AuditLogRepository> auditLogs;
     private final ObjectProvider<PlatformTransactionManager> transactionManager;
 
@@ -92,8 +94,8 @@ public class InsertAuditLogListener
 
             UUID userId;
             try {
-                userId = UUID.fromString(auditContext.getObject().getCurrentUser().toString());
-            } catch (IllegalArgumentException ex) {
+                userId = UUID.fromString(auth.getObject().getSignedInUserId().toString());
+            } catch (IllegalArgumentException | ResponseStatusException ex) {
                 userId = new UUID(0L, 0L);
             }
 

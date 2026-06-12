@@ -2,7 +2,6 @@ package com.strivolabs.strivolabsassessmentjava.auth.domainevents;
 
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.strivolabs.strivolabsassessmentjava.common.abstractions.DomainEventHandler;
@@ -21,7 +20,6 @@ public class EmailConfirmedDomainEventEventHandler implements DomainEventHandler
     private final JavaMailSender mail;
 
     @Override
-    @Async
     public void handle(EmailConfirmedDomainEvent event) {
         try {
             MimeMessage mimeMessage = mail.createMimeMessage();
@@ -35,6 +33,7 @@ public class EmailConfirmedDomainEventEventHandler implements DomainEventHandler
             mail.send(mimeMessage);
         } catch (MessagingException ex) {
             log.error("Failed to send welcome email to {}", event.email(), ex);
+            throw new RuntimeException("Email delivery failed, rolling back outbox state", ex);
         }
     }
 
