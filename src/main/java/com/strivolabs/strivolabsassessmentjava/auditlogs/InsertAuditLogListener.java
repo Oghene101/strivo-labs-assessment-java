@@ -140,10 +140,14 @@ public class InsertAuditLogListener
             }
 
             if (!Objects.equals(originalValue, currentValue)) {
-                changes.append(String.format("%s: from '%s' to '%s'\n",
-                        propertyNames[i],
-                        originalValue != null ? originalValue.toString() : "NULL",
-                        currentValue != null ? currentValue.toString() : "NULL"));
+                if (propertyNames[i].equals("passwordHash")) {
+                    changes.append("password changed");
+                } else {
+                    changes.append(String.format("%s: from '%s' to '%s'\n",
+                            propertyNames[i],
+                            originalValue != null ? originalValue.toString() : "NULL",
+                            currentValue != null ? currentValue.toString() : "NULL"));
+                }
             }
         }
 
@@ -151,8 +155,7 @@ public class InsertAuditLogListener
     }
 
     private boolean isIgnoredProperty(String propertyName) {
-        return propertyName.equalsIgnoreCase("passwordHash")
-                || propertyName.equalsIgnoreCase("lastUpdatedAt")
+        return propertyName.equalsIgnoreCase("lastUpdatedAt")
                 || propertyName.equalsIgnoreCase("lastUpdatedBy");
     }
 

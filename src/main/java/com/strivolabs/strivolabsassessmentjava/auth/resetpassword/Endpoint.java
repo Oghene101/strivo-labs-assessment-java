@@ -1,4 +1,4 @@
-package com.strivolabs.strivolabsassessmentjava.auth.forgotpassword;
+package com.strivolabs.strivolabsassessmentjava.auth.resetpassword;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -18,16 +18,16 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-@RestController("forgotPasswordEndpoint")
+@RestController("resetPasswordEndpoint")
 @RequiredArgsConstructor
-@RequestMapping("api/v1/auth/forgot-password")
+@RequestMapping("api/v1/auth/reset-password")
 @Tag(name = "auth")
 public final class Endpoint {
 
-    private final ForgotPassword.Handler handler;
+    private final ResetPassword.Handler handler;
 
     @PostMapping
-    @Operation(summary = "Initiate password reset", description = "Accepts a user's email address and triggers a password reset sequence if the account exists.")
+    @Operation(summary = "Complete password reset", description = "Consumes the verification token and applies the new password securely.")
     @ApiResponse( //
             responseCode = "200", //
             description = "Password reset initiated successfully", //
@@ -40,13 +40,13 @@ public final class Endpoint {
             responseCode = "400", //
             description = "Invalid request payload", //
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetail.class)))
-    public ResponseEntity<StandardResponse<Void>> forgotPassword(
+    public ResponseEntity<StandardResponse<Void>> resetPassword(
             @Valid @RequestBody Request request) {
-        ForgotPassword.CommandImpl command = Mapper.toCommand(request);
+        ResetPassword.CommandImpl command = Mapper.toCommand(request);
         Void result = handler.handle(command);
 
         StandardResponse<Void> response = StandardResponse.success(result,
-                "If the email address matches an active account, password reset instructions will be sent.", HttpStatus.OK);
+                "Your password has been successfully reset.", HttpStatus.OK);
 
         return ResponseEntity.ok(response);
     }

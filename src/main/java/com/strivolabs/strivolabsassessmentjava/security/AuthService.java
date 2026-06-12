@@ -12,7 +12,7 @@ import io.jsonwebtoken.Claims;
 public class AuthService {
     public String getSignedInUserId() throws ResponseStatusException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
+        if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal().equals("anonymousUser")) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
                     "Authentication context is not present.");
         }

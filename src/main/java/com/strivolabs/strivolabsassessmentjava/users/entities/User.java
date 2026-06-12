@@ -87,9 +87,9 @@ public class User extends EntityBase {
                 email));
     }
 
-    public void changePassword(String newPasswordHash, String updatedBy) {
+    public void changePassword(String newPasswordHash) {
         this.passwordHash = newPasswordHash;
-        updateAudit(updatedBy);
+        updateAudit(this.getId().toString());
     }
 
     public void forgotPassword() {
