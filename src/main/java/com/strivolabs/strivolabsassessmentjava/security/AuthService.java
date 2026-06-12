@@ -22,4 +22,17 @@ public class AuthService {
 
         throw new IllegalStateException("Authenticated user does not have JWT claims in the security context.");
     }
+
+    public String getSignedInUserEmail() throws ResponseStatusException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal().equals("anonymousUser")) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+                    "Authentication context is not present.");
+        }
+        if (authentication.getDetails() instanceof Claims claims) {
+            return claims.get("email", String.class);
+        }
+
+        throw new IllegalStateException("Authenticated user does not have JWT claims in the security context.");
+    }
 }
