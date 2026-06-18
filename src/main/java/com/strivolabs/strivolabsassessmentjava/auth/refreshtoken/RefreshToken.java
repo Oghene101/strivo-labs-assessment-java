@@ -7,9 +7,9 @@ import java.util.UUID;
 import org.springframework.stereotype.Component;
 
 import com.strivolabs.strivolabsassessmentjava.auth.dtos.RefreshTokenValidationDto;
+import com.strivolabs.strivolabsassessmentjava.auth.errors.AuthErrors;
 import com.strivolabs.strivolabsassessmentjava.auth.repositories.RefreshTokenRepository;
 import com.strivolabs.strivolabsassessmentjava.auth.repositories.SessionRepository;
-import com.strivolabs.strivolabsassessmentjava.common.abstractions.ApiError;
 import com.strivolabs.strivolabsassessmentjava.common.abstractions.Command;
 import com.strivolabs.strivolabsassessmentjava.common.abstractions.CommandHandler;
 import com.strivolabs.strivolabsassessmentjava.common.exceptions.ApiException;
@@ -55,28 +55,24 @@ public final class RefreshToken {
                         HashResponse hashResponse = hashing.compute(command.refreshToken());
                         RefreshTokenValidationDto rerfeshTokenValidation = refreshTokens
                                         .findByTokenHash(hashResponse.hash(), OffsetDateTime.now())
-                                        .orElseThrow(() -> ApiException.unauthorized(
-                                                        new ApiError("Auth.Error", "invalid token")));
+                                        .orElseThrow(() -> ApiException.unauthorized(AuthErrors.INVALID_TOKEN));
 
                         UUID userId = UUID.fromString(claims.getSubject());
                         UUID sessionId = UUID.fromString(claims.get("sid", String.class));
 
                         if (!userId.equals(rerfeshTokenValidation.userId())
                                         || !sessionId.equals(rerfeshTokenValidation.sessionId())) {
-                                throw ApiException.unauthorized(
-                                                new ApiError("Auth.Error", "invalid token"));
+                                throw ApiException.unauthorized(AuthErrors.INVALID_TOKEN);
                         }
 
                         if (!sessions.isActive(sessionId, OffsetDateTime.now())) {
-                                throw ApiException.unauthorized(
-                                                new ApiError("Auth.Error", "invalid token"));
+                                throw ApiException.unauthorized(AuthErrors.INVALID_TOKEN);
                         }
 
                         refreshTokens.revoke(userId, HANDLER_NAME, OffsetDateTime.now());
 
                         User user = users.findById(userId)
-                                        .orElseThrow(() -> ApiException.notFound(
-                                                        new ApiError("Auth.Error", "user not found")));
+                                        .orElseThrow(() -> ApiException.unauthorized(AuthErrors.INVALID_TOKEN));
 
                         List<String> roleNames = roles.findRoleNamesByUserId(userId);
 

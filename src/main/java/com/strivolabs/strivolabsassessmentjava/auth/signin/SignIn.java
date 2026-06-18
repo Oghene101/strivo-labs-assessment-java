@@ -11,9 +11,9 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.strivolabs.strivolabsassessmentjava.auth.errors.AuthErrors;
 import com.strivolabs.strivolabsassessmentjava.auth.repositories.RefreshTokenRepository;
 import com.strivolabs.strivolabsassessmentjava.auth.repositories.SessionRepository;
-import com.strivolabs.strivolabsassessmentjava.common.abstractions.ApiError;
 import com.strivolabs.strivolabsassessmentjava.common.abstractions.Command;
 import com.strivolabs.strivolabsassessmentjava.common.abstractions.CommandHandler;
 import com.strivolabs.strivolabsassessmentjava.common.exceptions.ApiException;
@@ -65,13 +65,11 @@ public final class SignIn {
 
                         User user = users.findByEmail(email)
                                         .orElseThrow(() -> ApiException
-                                                        .badRequest(new ApiError("Auth.Error",
-                                                                        "invalid email or password")));
+                                                        .badRequest(AuthErrors.INVALID_EMAIL_OR_PASSWORD));
 
                         if (user.isLocked()) {
                                 throw ApiException.tooManyRequests(
-                                                new ApiError("Auth.Error", "account locked until "
-                                                                + DateTimeUtils.format(user.getLockoutEnd())));
+                                                AuthErrors.accountLocked(DateTimeUtils.format(user.getLockoutEnd())));
                         }
 
                         if (!passwordEncoder.matches(command.password(), user.getPasswordHash())) {
@@ -96,8 +94,7 @@ public final class SignIn {
                         if (user.getAccessFailedCount() < maxFailedAttempts) {
                                 saveUserState(user);
 
-                                throw ApiException.badRequest(
-                                                new ApiError("Auth.Error", "invalid email or password"));
+                                throw ApiException.badRequest(AuthErrors.INVALID_EMAIL_OR_PASSWORD);
                         }
 
                         // Progressive lockout: Base * Multiplier^LockoutCount
@@ -111,8 +108,8 @@ public final class SignIn {
 
                         saveUserState(user);
 
-                        throw ApiException.tooManyRequests(new ApiError("Auth.Error",
-                                        "account locked until " + DateTimeUtils.format(user.getLockoutEnd())));
+                        throw ApiException.tooManyRequests(
+                                        AuthErrors.accountLocked(DateTimeUtils.format(user.getLockoutEnd())));
                 }
 
                 private void saveUserState(User user) {

@@ -6,7 +6,7 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
-import com.strivolabs.strivolabsassessmentjava.common.abstractions.ApiError;
+import com.strivolabs.strivolabsassessmentjava.auth.errors.AuthErrors;
 import com.strivolabs.strivolabsassessmentjava.common.abstractions.Command;
 import com.strivolabs.strivolabsassessmentjava.common.abstractions.CommandHandler;
 import com.strivolabs.strivolabsassessmentjava.common.exceptions.ApiException;
@@ -43,27 +43,26 @@ public final class ConfirmEmail {
                         Claims claims = jwt.verifyOnetimeToken(token, TokenPurpose.EMAIL_CONFIRMATION);
 
                         if (!claims.get("email", String.class).equals(email)) {
-                                throw ApiException.badRequest(new ApiError("Auth.Error", "invalid email or token"));
+                                throw ApiException.badRequest(AuthErrors.INVALID_TOKEN_OR_EMAIL);
                         }
 
                         UUID userId = UUID.fromString(claims.getSubject());
 
                         User user = users.findById(userId).orElseThrow(() -> ApiException
-                                        .badRequest(new ApiError("Auth.Error", "invalid email or token")));
+                                        .badRequest(AuthErrors.INVALID_TOKEN_OR_EMAIL));
 
                         if (!user.getEmail().equals(email)) {
-                                throw ApiException.badRequest(new ApiError("Auth.Error", "invalid email or token"));
+                                throw ApiException.badRequest(AuthErrors.INVALID_TOKEN_OR_EMAIL);
                         }
 
                         if (user.isEmailConfirmed()) {
-                                throw ApiException.conflict(
-                                                new ApiError("Auth.Error", "your email has already been confirmed"));
+                                throw ApiException.conflict(AuthErrors.EMAIL_ALREADY_CONFIRMED);
                         }
 
                         user.confirmEmail(user.getFirstName(), email, user.getFirstName() + " " + user.getLastName());
 
                         users.save(user);
-                        
+
                         return null;
                 }
         }

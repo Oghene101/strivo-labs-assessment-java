@@ -5,9 +5,9 @@ import java.time.OffsetDateTime;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import com.strivolabs.strivolabsassessmentjava.auth.errors.AuthErrors;
 import com.strivolabs.strivolabsassessmentjava.auth.repositories.RefreshTokenRepository;
 import com.strivolabs.strivolabsassessmentjava.auth.repositories.SessionRepository;
-import com.strivolabs.strivolabsassessmentjava.common.abstractions.ApiError;
 import com.strivolabs.strivolabsassessmentjava.common.abstractions.Command;
 import com.strivolabs.strivolabsassessmentjava.common.abstractions.CommandHandler;
 import com.strivolabs.strivolabsassessmentjava.common.exceptions.ApiException;
@@ -43,15 +43,15 @@ public final class ChangePassword {
 
                         User user = users.findByEmail(email)
                                         .orElseThrow(() -> ApiException
-                                                        .badRequest(new ApiError("Auth.Error", "Invalid request")));
+                                                        .badRequest(AuthErrors.BAD_REQUEST));
 
                         if (!passwordEncoder.matches(command.oldPassword(), user.getPasswordHash())) {
-                                throw ApiException.badRequest(new ApiError("Auth.Error", "Invalid request"));
+                                throw ApiException.badRequest(AuthErrors.BAD_REQUEST);
                         }
 
                         String newPasswordHash = passwordEncoder.encode(command.newPassword);
                         if (passwordEncoder.matches(command.newPassword(), user.getPasswordHash())) {
-                                throw ApiException.badRequest(new ApiError("Auth.Error", "Password reuse detected"));
+                                throw ApiException.badRequest(AuthErrors.PASSWORD_REUSE);
                         }
 
                         user.changePassword(newPasswordHash);

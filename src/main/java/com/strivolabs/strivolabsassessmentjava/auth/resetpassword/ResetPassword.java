@@ -3,7 +3,7 @@ package com.strivolabs.strivolabsassessmentjava.auth.resetpassword;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import com.strivolabs.strivolabsassessmentjava.common.abstractions.ApiError;
+import com.strivolabs.strivolabsassessmentjava.auth.errors.AuthErrors;
 import com.strivolabs.strivolabsassessmentjava.common.abstractions.Command;
 import com.strivolabs.strivolabsassessmentjava.common.abstractions.CommandHandler;
 import com.strivolabs.strivolabsassessmentjava.common.exceptions.ApiException;
@@ -40,15 +40,14 @@ public final class ResetPassword {
                         try {
                                 claims = jwt.verifyOnetimeToken(command.token(), TokenPurpose.PASSWORD_RESET);
                         } catch (JwtException e) {
-                                throw ApiException.badRequest(new ApiError("Auth.Error",
-                                                "Invalid token or password."));
+                                throw ApiException.badRequest(AuthErrors.INVALID_TOKEN_OR_PASSWORD);
                         }
 
                         String email = claims.get("email", String.class);
 
                         User user = users.findByEmail(email)
-                                        .orElseThrow(() -> ApiException.badRequest(new ApiError("Auth.Error",
-                                                        "Invalid token or password.")));
+                                        .orElseThrow(() -> ApiException
+                                                        .badRequest(AuthErrors.INVALID_TOKEN_OR_PASSWORD));
 
                         user.changePassword(passwordEncoder.encode(command.newPassword()));
 
