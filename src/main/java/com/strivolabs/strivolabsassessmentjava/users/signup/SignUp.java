@@ -5,7 +5,6 @@ import java.util.UUID;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import com.strivolabs.strivolabsassessmentjava.common.abstractions.ApiError;
 import com.strivolabs.strivolabsassessmentjava.common.abstractions.Command;
 import com.strivolabs.strivolabsassessmentjava.common.abstractions.CommandHandler;
 import com.strivolabs.strivolabsassessmentjava.common.constants.Roles;
@@ -13,6 +12,7 @@ import com.strivolabs.strivolabsassessmentjava.common.exceptions.ApiException;
 import com.strivolabs.strivolabsassessmentjava.roles.repositories.RoleRepository;
 import com.strivolabs.strivolabsassessmentjava.users.entities.User;
 import com.strivolabs.strivolabsassessmentjava.users.entities.UserRole;
+import com.strivolabs.strivolabsassessmentjava.users.errors.UserErrors;
 import com.strivolabs.strivolabsassessmentjava.users.repositories.UserRepository;
 import com.strivolabs.strivolabsassessmentjava.users.repositories.UserRoleRepository;
 
@@ -44,12 +44,11 @@ public final class SignUp {
                         String email = command.email().trim().toLowerCase();
 
                         if (users.existsByEmail(email)) {
-                                throw ApiException.conflict(new ApiError("User.Error", "email already exists"));
+                                throw ApiException.conflict(UserErrors.CONFLICT);
                         }
 
                         UUID roleId = roles.findIdByName(Roles.USER)
-                                        .orElseThrow(() -> ApiException
-                                                        .notFound(new ApiError("User.Error", "user role not found")));
+                                        .orElseThrow(() -> ApiException.notFound(UserErrors.USER_ROLE_NOT_FOUND));
 
                         String trimmedFirstName = command.firstName().trim();
                         String trimmedLastName = command.lastName().trim();
